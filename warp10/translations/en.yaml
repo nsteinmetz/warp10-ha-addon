@@ -1,0 +1,12 @@
+configuration:
+  heap:
+    name: JVM heap size
+    description: >-
+      Initial and maximum JVM heap size (e.g. "1g", "512m").
+      Increase this if you ingest a lot of sensors or keep long history.
+  disable_sensision:
+    name: Disable Sensision
+    description: >-
+      Sensision collects internal Warp10 usage metrics (number of GTS,
+      function calls, etc.) and stores them in your Warp10 instance.
+      Set to true to disable it.
