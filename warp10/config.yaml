@@ -20,7 +20,11 @@ ports_description:
 options:
   heap: "1g"
   disable_sensision: false
+  write_token: ""
+  read_token: ""
 schema:
   heap: str
   disable_sensision: bool
+  write_token: str?
+  read_token: str?
 image: "ghcr.io/nsteinmetz/warp10-ha-addon"

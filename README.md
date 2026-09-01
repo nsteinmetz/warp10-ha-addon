@@ -19,6 +19,10 @@ custom integration to stream sensor data into it.
   ingest many sensors or keep long history.
 - **disable_sensision** — disable Warp10's built-in usage-metrics
   collector (default `false`).
+- **write_token** / **read_token** — fixed token strings to use as-is with
+  warp10-ha-integration (or any other client). Leave either blank and the
+  add-on generates a random one on first start, persisted under `/data` so
+  it stays the same across restarts — check the add-on log to read it back.
 
 ## Ports
 
@@ -34,14 +38,31 @@ Warp10's storage lives under the add-on's own `/data` directory, which
 Supervisor persists automatically across restarts and updates — no
 additional volume mapping is needed.
 
-## Generating a write token
+## Tokens
 
-Exec into the running add-on container (Settings → Add-ons → Warp 10 →
+The add-on renders a static
+[`warp.token.file`](https://github.com/senx/warp10-platform/blob/master/warp10/src/main/java/io/warp10/continuum/Tokens.java)
+at `/data/tokens.conf` on every start, from the **write_token** /
+**read_token** options — this registers those literal strings as valid
+`X-Warp10-Token` values directly (no cryptographic wrapping), issued for a
+fixed 20-year TTL from a persisted issuance timestamp, and Warp10 reloads
+the file every 60s on its own. Set either option explicitly, or leave it
+blank to get a random one generated on first start (check the add-on log —
+Settings → Add-ons → Warp 10 → Log — for the value, which then persists
+across restarts). Use the write token when configuring warp10-ha-integration.
+
+The token's owner/producer UUID and issuance timestamp are each generated
+once and persisted under `/data`, independently of the token strings
+themselves — Warp10 indexes stored data by that UUID, so it must stay
+stable across restarts or previously written data becomes unreadable.
+
+These are separate from, and coexist with, Warp10's own crypto-wrapped
+tokens. If you need per-consumer, expiring, or capability-scoped tokens
+instead, exec into the running container (Settings → Add-ons → Warp 10 →
 Terminal, if you have the SSH/Terminal add-on, or `docker exec` from the
-host) and follow Warp10's standard
+host) and use `warp10.sh tokengen` per Warp10's standard
 [token generation](https://www.warp10.io/content/03_Documentation/05_Security/03_Token_Management)
-flow with `warp10.sh tokengen`. Use the resulting WRITE token when
-configuring the warp10-ha-integration.
+flow.
 
 ## Known caveats / things to verify before relying on this in production
 
