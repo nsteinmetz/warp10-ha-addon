@@ -1,0 +1,35 @@
+configuration:
+  heap:
+    name: Taille de la HEAP JVM
+    description: >-
+      Taille initiale et maximale de la HEAP JVM (ex. "1g", "512m").
+      Augmentez cette valeur si vous ingérez beaucoup de capteurs ou
+      conservez un historique long.
+  disable_sensision:
+    name: Désactiver Sensision
+    description: >-
+      Sensision collecte des métriques internes d'utilisation de Warp10
+      (nombre de GTS, appels de fonctions, etc.) et les stocke dans votre
+      instance Warp10. Mettez à true pour le désactiver.
+  enable_warpstudio:
+    name: Activer WarpStudio
+    description: >-
+      Active l'interface web WarpStudio (port 8081). Ne prend effet qu'au
+      tout premier démarrage de l'add-on avec un répertoire de données
+      vierge — le modifier ensuite n'a aucun effet, car cette décision est
+      prise une seule fois lors de l'initialisation initiale de Warp10.
+  write_token:
+    name: Jeton d'écriture
+    description: >-
+      Jeton d'écriture fixe à utiliser avec warp10-ha-integration ou tout
+      autre client. Laissez vide pour que l'add-on en génère un au premier
+      démarrage (consultez le journal de l'add-on pour récupérer la
+      valeur générée) — il reste stable d'un redémarrage à l'autre dans
+      les deux cas.
+  read_token:
+    name: Jeton de lecture
+    description: >-
+      Jeton de lecture fixe, par exemple pour WarpStudio ou Grafana.
+      Laissez vide pour que l'add-on en génère un au premier démarrage
+      (consultez le journal de l'add-on pour récupérer la valeur générée)
+      — il reste stable d'un redémarrage à l'autre dans les deux cas.

@@ -2,7 +2,7 @@ name: "Warp 10"
 version: "3.5.0"
 slug: "warp10"
 description: "Warp 10 time series platform, running locally as a Home Assistant add-on"
-url: "https://github.com/YOUR_GITHUB_USERNAME/warp10-ha-addon"
+url: "https://github.com/nsteinmetz/warp10-ha-addon"
 # Match this list to what the pinned warp10io/warp10 tag actually publishes
 # on Docker Hub before enabling an architecture here.
 arch:
@@ -20,7 +20,13 @@ ports_description:
 options:
   heap: "1g"
   disable_sensision: false
+  enable_warpstudio: true
+  write_token: ""
+  read_token: ""
 schema:
   heap: str
   disable_sensision: bool
+  enable_warpstudio: bool
+  write_token: str?
+  read_token: str?
 image: "ghcr.io/nsteinmetz/warp10-ha-addon"
