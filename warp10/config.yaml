@@ -2,7 +2,7 @@ name: "Warp 10"
 # Must exactly match the GitHub Release tag name that publishes the image
 # Supervisor will pull (see .github/workflows/build.yml) — not the pinned
 # WARP10_VERSION build-arg.
-version: "3.5.0-1"
+version: "3.5.0-2"
 slug: "warp10"
 description: "Warp 10 time series platform, running locally as a Home Assistant add-on"
 url: "https://github.com/nsteinmetz/warp10-ha-addon"

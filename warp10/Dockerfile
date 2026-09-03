@@ -29,3 +29,12 @@ RUN chmod a+x /run.sh
 # the original entrypoint so the rest of its init (token generation,
 # permission fixup, JVM launch) runs unmodified.
 ENTRYPOINT [ "/run.sh" ]
+
+# Docker resets an inherited CMD to empty as soon as a derived Dockerfile
+# sets its own ENTRYPOINT (see "Understand how CMD and ENTRYPOINT interact"
+# in Docker's docs) — without redeclaring it here, run.sh's "$@" is empty,
+# which propagates all the way to docker-entrypoint.sh's final
+# `exec gosu warp10 "$@"`, so gosu gets no command and just prints its
+# usage banner instead of ever launching the JVM. Must match the base
+# image's own CMD exactly (senx/warp10-docker's ubuntu/Dockerfile).
+CMD [ "/opt/warp10/bin/warp10.sh", "start" ]
