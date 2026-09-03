@@ -37,8 +37,15 @@ echo "[warp10-addon] heap=${WARP10_HEAP} sensision_disabled=${DISABLE_SENSISION}
 # via TOKENGEN.tokenFromMap) rather than the terser `token.write.<id>.*`
 # key=value form: that shorter form silently defaults issuance to epoch-0 and
 # expiry to Long.MAX_VALUE when omitted (see Tokens.java's loadTokens/sanitize
-# pass) and has no way to set issuance at all. Spelling out 'issuance'/'ttl'
-# explicitly here is more auditable than relying on that implicit fallback.
+# pass) and has no way to set issuance at all. Spelling out 'issuance'/'ttl',
+# and 'labels'/'attributes' (empty maps where unused), explicitly here is more
+# auditable than relying on that implicit fallback.
+#
+# The read token's 'attributes' sets the '.cap:maxops'/'.cap:maxdepth'
+# capabilities, capping the WarpScript ops and stack depth any script run
+# with that token may use (1e7/1e5) — a sane ceiling for a token that may end
+# up in something like a Grafana datasource. Values must be strings, hence
+# the `1e7 TOLONG TOSTRING` (avoids the double's default "1.0E7" formatting).
 #
 # Owner/producer UUID and the issuance timestamp are each generated once and
 # persisted under /data, since Warp10 indexes stored GTS by the owner/producer
@@ -72,8 +79,8 @@ if [ -z "$READ_TOKEN" ]; then
 fi
 
 cat > "$TOKENS_CONF" <<EOF
-token.spec = { 'id' '${WRITE_TOKEN}' 'type' 'WRITE' 'application' 'homeassistant' 'owner' '${OWNER_UUID}' 'producer' '${OWNER_UUID}' 'issuance' ${ISSUANCE_MS} 'ttl' ${TOKEN_TTL_MS} }
-token.spec = { 'id' '${READ_TOKEN}' 'type' 'READ' 'application' 'homeassistant' 'owner' '${OWNER_UUID}' 'issuance' ${ISSUANCE_MS} 'ttl' ${TOKEN_TTL_MS} 'owners' [ '${OWNER_UUID}' ] 'producers' [ '${OWNER_UUID}' ] 'applications' [ 'homeassistant' ] }
+token.spec = { 'id' '${WRITE_TOKEN}' 'type' 'WRITE' 'application' 'homeassistant' 'owner' '${OWNER_UUID}' 'producer' '${OWNER_UUID}' 'issuance' ${ISSUANCE_MS} 'ttl' ${TOKEN_TTL_MS} 'labels' { } 'attributes' { } }
+token.spec = { 'id' '${READ_TOKEN}' 'type' 'READ' 'application' 'homeassistant' 'owner' '${OWNER_UUID}' 'issuance' ${ISSUANCE_MS} 'ttl' ${TOKEN_TTL_MS} 'owners' [ '${OWNER_UUID}' ] 'producers' [ '${OWNER_UUID}' ] 'applications' [ 'homeassistant' ] 'labels' { } 'attributes' { '.cap:maxops' 1e7 TOLONG TOSTRING '.cap:maxdepth' 1e5 TOLONG TOSTRING } }
 EOF
 chmod 644 "$TOKENS_CONF"
 
