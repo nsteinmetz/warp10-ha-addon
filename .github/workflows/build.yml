@@ -1,7 +1,13 @@
 name: Build
 
-# Publish a GitHub Release (tag like "v3.6.0-1") to trigger a build.
-# You can also run this manually while developing.
+# Publish a GitHub Release to trigger a build. The image gets pushed with
+# the release's own tag name (github.event.release.tag_name) — Supervisor
+# pulls "image:<config.yaml version>" verbatim, so the release's tag name
+# and warp10/config.yaml's "version" field MUST be the exact same string
+# (e.g. tag "3.5.0-1" <-> version: "3.5.0-1"), or Supervisor's pull 404s/403s
+# even though the build succeeded.
+# You can also run this manually while developing (workflow_dispatch), but
+# that skips the image-tags/version steps that come from the release event.
 on:
   release:
     types: [published]
@@ -10,9 +16,12 @@ on:
 env:
   ARCHITECTURES: '["amd64", "aarch64"]'
   IMAGE_NAME: warp10-ha-addon
-  # Pin the upstream Warp10 release baked into the image. Bump this and
-  # config.yaml's "version" together when you want to update Warp10.
-  WARP10_VERSION: "3.5.0"
+  # Pin the upstream Warp10 release baked into the image (must be a tag that
+  # actually exists at https://hub.docker.com/r/warp10io/warp10/tags — it's
+  # never published a bare "<version>" tag, always "<version>-ubuntu" or
+  # "<version>-alpine"). Bump this and Dockerfile's matching ARG default
+  # together when you want to update Warp10.
+  WARP10_VERSION: "3.5.0-ubuntu"
 
 permissions:
   contents: read

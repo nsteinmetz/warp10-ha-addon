@@ -1,6 +1,13 @@
 # Pin the upstream Warp10 release baked into this add-on. Overridden at
 # build time via --build-arg from the CI workflow.
-ARG WARP10_VERSION=3.5.0
+#
+# NOTE: warp10io/warp10 has never published a bare "<version>" tag; since
+# 3.0.0 it's always "<version>-ubuntu" or "<version>-alpine" (each with a
+# "-ci" test variant too). We use "-ubuntu" since that's the flavor whose
+# docker-entrypoint.sh / BUILD_WARPSTUDIO env var run.sh relies on. Verify
+# the tag actually exists before bumping:
+# https://hub.docker.com/r/warp10io/warp10/tags
+ARG WARP10_VERSION=3.5.0-ubuntu
 FROM warp10io/warp10:${WARP10_VERSION}
 
 # ARGs declared before FROM don't survive it; redeclare the ones injected
