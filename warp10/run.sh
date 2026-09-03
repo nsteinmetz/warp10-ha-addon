@@ -11,11 +11,13 @@ TOKEN_TTL_MS=$((20 * 365 * 24 * 60 * 60 * 1000))  # 20 years
 if [ -f "$OPTIONS_FILE" ]; then
     HEAP=$(jq -r '.heap // "1g"' "$OPTIONS_FILE")
     DISABLE_SENSISION=$(jq -r '.disable_sensision // false' "$OPTIONS_FILE")
+    ENABLE_WARPSTUDIO=$(jq -r '.enable_warpstudio // true' "$OPTIONS_FILE")
     WRITE_TOKEN=$(jq -r '.write_token // ""' "$OPTIONS_FILE")
     READ_TOKEN=$(jq -r '.read_token // ""' "$OPTIONS_FILE")
 else
     HEAP="1g"
     DISABLE_SENSISION="false"
+    ENABLE_WARPSTUDIO="true"
     WRITE_TOKEN=""
     READ_TOKEN=""
 fi
@@ -27,7 +29,15 @@ if [ "$DISABLE_SENSISION" = "true" ]; then
     export NO_SENSISION=true
 fi
 
-echo "[warp10-addon] heap=${WARP10_HEAP} sensision_disabled=${DISABLE_SENSISION}"
+# BUILD_WARPSTUDIO gates whether the base image's docker-entrypoint.sh wires
+# up the WarpStudio plugin (port 8081) — but only on the very first boot of a
+# fresh /data volume (guarded by its own .firstinit marker, same as the
+# token/keystore init). Flipping this option later, on an already-initialized
+# install, has no effect: the persisted /data/warp10/etc/conf.d config from
+# that first boot is what's actually read on every subsequent start.
+export BUILD_WARPSTUDIO="$ENABLE_WARPSTUDIO"
+
+echo "[warp10-addon] heap=${WARP10_HEAP} sensision_disabled=${DISABLE_SENSISION} warpstudio_enabled=${ENABLE_WARPSTUDIO}"
 
 # --- Named tokens via Warp10's `warp.token.file` ----------------------------
 #

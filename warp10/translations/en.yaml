@@ -10,6 +10,13 @@ configuration:
       Sensision collects internal Warp10 usage metrics (number of GTS,
       function calls, etc.) and stores them in your Warp10 instance.
       Set to true to disable it.
+  enable_warpstudio:
+    name: Enable WarpStudio
+    description: >-
+      Enable the WarpStudio web UI (port 8081). Only takes effect on the
+      add-on's very first start with a fresh data directory — changing it
+      afterward has no effect, since this is decided once during Warp10's
+      own first-run initialization.
   write_token:
     name: Write token
     description: >-

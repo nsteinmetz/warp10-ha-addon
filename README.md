@@ -19,6 +19,9 @@ custom integration to stream sensor data into it.
   ingest many sensors or keep long history.
 - **disable_sensision** — disable Warp10's built-in usage-metrics
   collector (default `false`).
+- **enable_warpstudio** — enable the WarpStudio web UI on port 8081
+  (default `true`). Only takes effect on the add-on's very first start
+  with a fresh `/data` — see [Ports](#ports) below.
 - **write_token** / **read_token** — fixed token strings to use as-is with
   warp10-ha-integration (or any other client). Leave either blank and the
   add-on generates a random one on first start, persisted under `/data` so
@@ -30,7 +33,15 @@ custom integration to stream sensor data into it.
   is the URL you'll enter in the warp10-ha-integration config flow, e.g.
   `http://<home-assistant-ip>:8080` (or `http://<addon-hostname>:8080`
   using the Supervisor's internal DNS if calling from another add-on).
-- `8081` — WarpStudio web UI.
+- `8081` — WarpStudio web UI. Gated by the **enable_warpstudio** option
+  (default on), which sets the base image's `BUILD_WARPSTUDIO` env var —
+  but that's only read during Warp10's own first-run initialization of a
+  fresh `/data` volume. Toggling it after the add-on has already started
+  once has no effect, since the plugin config it controls is written to
+  `/data/warp10/etc/conf.d` on that first boot and simply persists from
+  there on every subsequent start. To change it on an existing install,
+  wipe `/data` (loses all Warp10 data) or manually edit/remove the
+  persisted `99-io.warp10-warp10-plugin-warpstudio.conf`.
 
 ## Data persistence
 
